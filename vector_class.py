@@ -1,55 +1,68 @@
 from math import *
 
-class Vector():
+class Vector:
+    
     def __init__(self, x, y, z):
         self.x, self.y, self.z = x, y, z  #float(x), float(y), float(z)
 
     # basic operations ===========================================================
     def __add__(self, other):
-        if type(other)==Vector:
-            return Vector(self.x + other.x,
+        if type(other) == Vector:
+            return Vector(
+                self.x + other.x,
                 self.y + other.y,
-                self.z + other.z)
-        elif type(other)==float or type(other)==int:
+                self.z + other.z
+            )
+        elif type(other) == float or type(other) == int:
             return self + Vector(other, other, other)
 
     def __sub__(self, other):
-        if type(other)==Vector:
-            return Vector(self.x - other.x,
+        if type(other) == Vector:
+            return Vector(
+                self.x - other.x,
                 self.y - other.y,
-                self.z - other.z)
-        elif type(other)==float or type(other)==int:
+                self.z - other.z
+            )
+        elif type(other) == float or type(other) == int:
             return self - Vector(other, other, other)
 
     def __mul__(self, other):
-        if type(other)==Vector:
-            return Vector(self.x * other.x,
+        if type(other) == Vector:
+            return Vector(
+                self.x * other.x,
                 self.y * other.y,
-                self.z * other.z)
-        elif type(other)==float or type(other)==int:
+                self.z * other.z
+            )
+        elif type(other) == float or type(other) == int:
             return self * Vector(other, other, other)
 
     def __truediv__(self, other):
-        if type(other)==Vector:
-            return Vector(self.x / other.x,
+        if type(other) == Vector:
+            return Vector(
+                self.x / other.x,
                 self.y / other.y,
-                self.z / other.z)
-        elif type(other)==float or type(other)==int:
+                self.z / other.z
+            )
+        elif type(other) == float or type(other) == int:
             return self / Vector(other, other, other)
     
     def __pow__(self, other):
-        if type(other)==Vector:
-            return Vector((self.x ** other.x).real ,
-                (self.y ** other.y).real ,
-                (self.z ** other.z).real)
-        elif type(other)==float or type(other)==int:
+        if type(other) == Vector:
+            return Vector(
+                (self.x ** other.x).real,
+                (self.y ** other.y).real,
+                (self.z ** other.z).real
+            )
+        elif type(other) == float or type(other) == int:
             return self ** Vector(other, other, other)
         else: raise TypeError("Vector POWER error")
     
     def __neg__(self):
-        return Vector(-self.x,
+        return Vector(
+            -self.x,
             -self.y,
-            -self.z)
+            -self.z
+        )
 
     def abs(self):
         return Vector(abs(self.x), abs(self.y), abs(self.z))
@@ -93,7 +106,11 @@ class Vector():
         return float(temp.x + temp.y + temp.z)
 
     def crossProduct(self, other):
-        return Vector(self.y * other.z - self.z * other.y, self.z * other.x - self.x * other.z, self.x * other.y - self.y * other.x)
+        return Vector(
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x
+        )
 
     def rotate(self, other):
         rx, ry, rz = other.x, other.y, other.z

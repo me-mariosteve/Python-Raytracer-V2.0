@@ -1,6 +1,8 @@
 from vector_class import Vector
 
+
 class TextureValue:
+    
     def __init__(self, value):
         """An unique color/value for all the object"""
         self.value = value
@@ -10,6 +12,7 @@ class TextureValue:
 
 
 class SquareTexture:
+    
     def __init__(self, squareSize, val1, val2):
         self.squareSize = squareSize
         self.val1, self.val2 = val1, val2

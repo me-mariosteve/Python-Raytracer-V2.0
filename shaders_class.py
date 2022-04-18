@@ -12,7 +12,7 @@ def nearestIntersectedObject(objects, rayOrigin, rayDirection):
     distances = []
     normals = []
     for obj in objects:
-            distance, normal = obj.Intersect(rayOrigin, rayDirection)
+            distance, normal = obj.intersect(rayOrigin, rayDirection)
             distances.append(distance)
             normals.append(normal)
 
@@ -49,7 +49,7 @@ def DiffuseIndirectLightning(position, normal, worldInfos, parameters):
             indirectLightning += worldInfos[2]
         else:
             intersection = position + randVector * minDistance
-            illumination = nearestObject.Shader(randVector, intersection, worldInfos, newParameters, "diffuse")
+            illumination = nearestObject.shader(randVector, intersection, worldInfos, newParameters, "diffuse")
 
             intersectionToLight = Vector.normalize(worldInfos[1]["position"]- (intersection + normal * 1e-5))
             indirectLightning += illumination * math.cos(Vector.dotProduct(intersectionToLight, objectNormal))
@@ -58,7 +58,7 @@ def DiffuseIndirectLightning(position, normal, worldInfos, parameters):
     return indirectLightning
 
 
-def AmbientOcclusion(position, normal, worldInfos, parameters):
+def ambientOcclusion(position, normal, worldInfos, parameters):
     aoFactor = 0
 
     for i in range(parameters["indirectLightingSamples"]):
@@ -83,7 +83,7 @@ def calculateDiffuse(position, direction, worldInfos):
 # Shader class  =======================================================================================================================
 
 # Default Shader
-class DefaultShader():
+class DefaultShader:
 
     def __init__(self, ambient:Vector, diffuse:Vector, specular:Vector, shininess:float, reflection:float):
         """ambient: Color without lighting
@@ -98,7 +98,7 @@ class DefaultShader():
         self.shininess = shininess
         self.reflection = reflection
 
-    def Calculate(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
+    def calculate(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
         
         objects, light, backgroundColor, camera = worldInfos[0], worldInfos[1], worldInfos[2], worldInfos[3]
 
@@ -137,8 +137,8 @@ class DefaultShader():
         # Specular
         if renderMode=="specular"  or renderMode=="all":
             intersectionToCamera = Vector.normalize(camera["position"] - intersection)
-            H = Vector.normalize(intersectionToLight + intersectionToCamera)
-            illumination += self.specular.getColor(intersection) * lighting * Vector.dotProduct(normal, H) ** (self.shininess / 4)
+            h = Vector.normalize(intersectionToLight + intersectionToCamera)
+            illumination += self.specular.getColor(intersection) * lighting * Vector.dotProduct(normal, h) ** (self.shininess / 4)
 
         # Shadows
         """if renderMode=="all":
@@ -154,13 +154,14 @@ class DefaultShader():
                 return illumination + backgroundColor * self.reflection
             else:
                 intersection = shiftedPoint + direction * minDistance
-                reflectionColor = nearestObject.shader.Calculate(direction, intersection, objectNormal, worldInfos, newParameters, renderMode)
+                reflectionColor = nearestObject._shader.calculate(direction, intersection, objectNormal, worldInfos, newParameters, renderMode)
                 return illumination + reflectionColor * self.reflection
         else:
             return illumination
 
 # Diffuse Shader
-class DiffuseShader():
+class DiffuseShader:
+    
     def __init__(self, ambient:Vector, diffuse:Vector, reflection:float):
         """ambient: Color without lighting
         diffuse: Color with lighting
@@ -170,7 +171,7 @@ class DiffuseShader():
         self.diffuse = diffuse
         self.reflection = reflection
 
-    def Calculate(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
+    def calculate(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
         objects, light, backgroundColor, camera = worldInfos[0], worldInfos[1], worldInfos[2], worldInfos[3]
 
         newParameters = copy(parameters)
@@ -220,18 +221,19 @@ class DiffuseShader():
                 return illumination + backgroundColor * self.reflection
             else:
                 intersection = shiftedPoint + direction * minDistance
-                reflectionColor = nearestObject.shader.Calculate(direction, intersection, objectNormal, worldInfos, newParameters, renderMode)
+                reflectionColor = nearestObject._shader.calculate(direction, intersection, objectNormal, worldInfos, newParameters, renderMode)
                 return illumination + reflectionColor * self.reflection
         else:
             return illumination
 
 # Glass Shader
 class GlassShader:
+    
     def __init__(self, ambient, diffuse, reflection):
         self.ambient = ambient
         self.diffuse = diffuse
         self.reflection = reflection
 
-    def Calculate(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
+    def calculate(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
         objects, light, backgroundColor, camera = worldInfos[0], worldInfos[1], worldInfos[2], worldInfos[3]
         

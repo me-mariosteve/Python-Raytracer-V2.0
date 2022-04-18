@@ -4,15 +4,16 @@ import numpy as np
 from vector_class import Vector
 #from shader_class import Default
 
+
 # Class Sphere
-class Sphere():
+class Sphere:
 
     def __init__(self, center:Vector, radius:float, shader):
         self.center = center
         self.radius = radius
-        self.shader = shader
+        self._shader = shader
 
-    def Intersect(self, rayOrigin, rayDirection):
+    def intersect(self, rayOrigin, rayDirection):
         b = rayDirection.dotProduct(rayOrigin - self.center) * 2
         c = Vector.length(rayOrigin - self.center) ** 2 - self.radius ** 2
         delta = b ** 2 - 4 * c
@@ -28,23 +29,23 @@ class Sphere():
 
         return None, None
         
-    def Shader(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
+    def shader(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
 
-        return self.shader.Calculate(rayDirection, intersection, normal, worldInfos, parameters, renderMode)
+        return self._shader.calculate(rayDirection, intersection, normal, worldInfos, parameters, renderMode)
 
 
 # Class Plane
-class Plane():
+class Plane:
 
-    def __init__(self, normal:Vector, distance:float, shader):
+    def __init__(self, normal: Vector, distance: float, shader):
         """normal: normalized vector, orientation of the plane
         distance: distance of the plane from the scene origin, aligned on the normal
         """
         self.normal = normal.normalize()
         self.distance = distance
-        self.shader = shader
+        self._shader = shader
 
-    def Intersect(self, rayOrigin, rayDirection):
+    def intersect(self, rayOrigin, rayDirection):
         dotDir = self.normal.dotProduct(rayDirection)
         dot = self.normal.dotProduct(rayOrigin)
         dist = (dot + self.distance) / dotDir
@@ -54,17 +55,19 @@ class Plane():
 
         else: return None, None
 
-    def Shader(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
+    def shader(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
 
-        return self.shader.Calculate(rayDirection, intersection, self.normal, worldInfos, parameters, renderMode)
+        return self._shader.calculate(rayDirection, intersection, self.normal, worldInfos, parameters, renderMode)
 
 
-class ImportedOBJ():
-    def __init__(self, path:str, position:Vector, size:float, shader):
-        self.shader = shader
+class ImportedOBJ:
+    
+    def __init__(self, path: str, position: Vector, size: float, shader):
+        
+        self._shader = shader
         vertices = []
         self.faces = []
-
+        
         f = open(path)
         for line in f:
             if line[:2] == "v ":
@@ -73,7 +76,13 @@ class ImportedOBJ():
                 index2 = line.find(" ", index1 + 1)
                 index3 = line.find(" ", index2 + 1)
 
-                vertex = (Vector(float(line[index1:index2]), float(line[index2:index3]), float(line[index3:-index1])).round(2) + position) * size
+                vertex = (
+                    Vector(
+                        float(line[index1:index2]),
+                        float(line[index2:index3]),
+                        float(line[index3:-index1])
+                    ).round(2) + position
+                ) * size
                 vertices.append(vertex)
 
             elif line[:2] == "f ":
@@ -92,11 +101,11 @@ class ImportedOBJ():
 
         print(len(self.faces))
 
-    def Intersect(self, rayOrigin, rayDirection):
+    def intersect(self, rayOrigin, rayDirection):
         distances = []
         normals = []
         for triangle in self.faces:
-            distance, normal = triangle.Intersect(rayOrigin, rayDirection)
+            distance, normal = triangle.intersect(rayOrigin, rayDirection)
             print(normal)
             distances.append(distance)
             normals.append(normal)
@@ -110,9 +119,9 @@ class ImportedOBJ():
 
         return minDistance, normalToSurface
 
-    def Shader(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
+    def shader(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
 
-        return self.shader.Calculate(rayDirection, intersection, normal, worldInfos, parameters, renderMode)
+        return self._shader.calculate(rayDirection, intersection, normal, worldInfos, parameters, renderMode)
 
 
 class Triangle():
@@ -120,9 +129,9 @@ class Triangle():
         self.p1 = point1
         self.p2 = point2
         self.p3 = point3
-        self.shader = shader
+        self._shader = shader
 
-    def Intersect(self, rayOrigin, rayDirection):
+    def intersect(self, rayOrigin, rayDirection):
         p1p2 = self.p2 - self.p1
         p1p3 = self.p3 - self.p1
 
@@ -173,6 +182,6 @@ class Triangle():
         #u /= denom
         #v /= denom
 
-    def Shader(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
+    def shader(self, rayDirection, intersection, normal, worldInfos, parameters, renderMode):
 
-        return self.shader.Calculate(rayDirection, intersection, normal, worldInfos, parameters, renderMode)
+        return self._shader.calculate(rayDirection, intersection, normal, worldInfos, parameters, renderMode)
