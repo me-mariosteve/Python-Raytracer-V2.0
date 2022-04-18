@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-from vector_class import *
+from Vector import *
 from objects_class import *
 from textures_class import *
 from shaders_class import *

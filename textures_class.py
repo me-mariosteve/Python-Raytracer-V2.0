@@ -1,4 +1,4 @@
-from vector_class import Vector
+from Vector import Vector
 
 
 class TextureValue:

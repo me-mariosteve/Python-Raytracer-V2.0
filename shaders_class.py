@@ -4,7 +4,7 @@ from random import random, uniform
 from copy import copy
 
 from objects_class import *
-from vector_class import *
+from Vector import Vector
 from textures_class import *
 
 

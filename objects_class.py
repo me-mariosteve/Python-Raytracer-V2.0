@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-from vector_class import Vector
+from Vector import Vector
 #from shader_class import Default
 
 
